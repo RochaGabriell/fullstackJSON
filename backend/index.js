@@ -1,6 +1,7 @@
-import app from './src/app.js'
+const app = require('./src/app')
 
-const port = 8000
+const port = 8080
+
 app.listen(port, () => {
-  console.log(`Servidor escutando na porta ${port}`)
+  console.log(`App rodando em http://localhost:${port}`)
 })
