@@ -18,57 +18,46 @@ if (fs.existsSync(arquivoJson)) {
   fs.writeFileSync(arquivoJson, '[]')
 }
 
-app.get('/', (req, res) => {
-  res.status(200).send('Notas de Aula - IFPI')
+app.get('/news', (req, res) => {
+  res.json(dados)
 })
 
-app.get('/estudantes', (req, res) => {
-  res.status(200).json(dados)
+app.get('/news/carousel', (req, res) => {
+  const news = dados.slice(0, 3)
+  res.json(news)
 })
 
-app.post('/estudantes', (req, res) => {
-  const novoEstudante = {
-    id: uuidv4(),
-    nome: req.body.nome,
-    dataNascimento: req.body.dataNascimento
-  }
-
-  dados.push(novoEstudante)
+app.post('/news', (req, res) => {
+  const { news_title, news_content, news_image, news_date } = req.body
+  const id = uuidv4()
+  const news = { id, news_title, news_content, news_image, news_date }
+  dados.push(news)
   fs.writeFileSync(arquivoJson, JSON.stringify(dados))
-  res.status(201).json(novoEstudante)
+  res.json(news)
 })
 
-app.get('/estudantes/:id', (req, res) => {
-  const estudante = dados.find(p => p.id === req.params.id)
-  if (estudante) {
-    res.status(200).json(estudante)
-  } else {
-    res.status(404).send('Estudante não encontrado')
+app.put('/news/:id', (req, res) => {
+  const { id } = req.params
+  const { news_title, news_content, news_image, news_date } = req.body
+  const index = dados.findIndex(news => news.id === id)
+  if (index === -1) {
+    return res.status(404).json({ error: 'Noticias não encontradas' })
   }
+  const news = { id, news_title, news_content, news_image, news_date }
+  dados[index] = news
+  fs.writeFileSync(arquivoJson, JSON.stringify(dados))
+  res.json(news)
 })
 
-app.delete('/estudantes/:id', (req, res) => {
-  const index = dados.findIndex(p => p.id === req.params.id)
-  if (index !== -1) {
-    dados.splice(index, 1)
-    fs.writeFileSync(arquivoJson, JSON.stringify(dados))
-    res.status(200).send(`Estudante ${req.params.id} removido com
-  sucesso`)
-  } else {
-    res.status(404).send('Estudante não encontrado')
+app.delete('/news/:id', (req, res) => {
+  const { id } = req.params
+  const index = dados.findIndex(news => news.id === id)
+  if (index === -1) {
+    return res.status(404).json({ error: 'Noticias não encontradas' })
   }
-})
-
-app.put('/estudantes/:id', (req, res) => {
-  const estudante = dados.find(p => p.id === req.params.id)
-  if (estudante) {
-    estudante.nome = req.body.nome
-    estudante.dataNascimento = req.body.dataNascimento
-    fs.writeFileSync(arquivoJson, JSON.stringify(dados))
-    res.status(200).send('Estudante alterado com sucesso')
-  } else {
-    res.status(404).send('Estudante não encontrado')
-  }
+  dados.splice(index, 1)
+  fs.writeFileSync(arquivoJson, JSON.stringify(dados))
+  res.sendStatus(204)
 })
 
 module.exports = app
