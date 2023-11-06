@@ -22,15 +22,14 @@ const News = () => {
     news_date: ''
   })
   const [erro, setErro] = useState(null)
-  const dateForm = newNews.news_date.split('-').reverse().join('-')
-
+  
   const addNews = async () => {
     try {
       const newNewsFormatado = {
         news_title: newNews.news_title,
         news_content: newNews.news_content,
         news_image: newNews.news_image,
-        news_date: dateForm
+        news_date: newNews.news_date
       }
 
       if (newsSelected) {
@@ -73,7 +72,7 @@ const News = () => {
       news_title: item.news_title,
       news_content: item.news_content,
       news_image: item.news_image,
-      news_date: dateForm
+      news_date: item.news_date
     })
   }
 

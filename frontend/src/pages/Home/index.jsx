@@ -16,6 +16,12 @@ const Container = styled.div`
   img {
     height: calc(90vh - 10px);
   }
+
+  h5, p {
+    background-color: #000000;
+    border-radius: 5px;
+    padding: 5px;
+  }
 `
 
 const Home = () => {
